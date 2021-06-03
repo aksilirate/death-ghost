@@ -1,0 +1,4 @@
+name: Death Ghost
+version: ${project.version}
+main: com.elunar.plugin.deathghost.DeathGhost
+api-version: 1.16
