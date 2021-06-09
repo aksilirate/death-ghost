@@ -20,7 +20,7 @@ public class EventListener implements Listener {
     public RandomRespawn randomRespawn = new RandomRespawn();
     public ResetLocation resetLocation = new ResetLocation();
 
-    public EventListener(DeathGhost deathGhostClass){
+    public EventListener(DeathGhost deathGhostClass) {
         this.dataManager = new DataManager(deathGhostClass);
     }
 
@@ -33,7 +33,6 @@ public class EventListener implements Listener {
         dataManager.setYamlPlayerInventory(player.getName(), player.getInventory().getContents());
         dataManager.setYamlPlayerGhostMode(player.getName(), true);
         dataManager.setYamlPlayerDeathLocation(player.getName(), player.getLocation());
-
 
 
         player.getInventory().clear();
@@ -50,9 +49,9 @@ public class EventListener implements Listener {
         Location location = dataManager.getYamlPlayerDeathLocation(player.getName());
         event.getPlayer().getInventory().setHeldItemSlot(0);
 
-        event.getPlayer().getInventory().setItem(0,respawnHere.getItem());
-        event.getPlayer().getInventory().setItem(1,randomRespawn.getItem());
-        event.getPlayer().getInventory().setItem(8,resetLocation.getItem());
+        event.getPlayer().getInventory().setItem(0, respawnHere.getItem());
+        event.getPlayer().getInventory().setItem(1, randomRespawn.getItem());
+        event.getPlayer().getInventory().setItem(8, resetLocation.getItem());
 
         event.setRespawnLocation(location);
 
@@ -63,16 +62,18 @@ public class EventListener implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         if (event.getItemDrop().getItemStack().equals(respawnHere.getItem())) {
             event.setCancelled(true);
+        } else if (event.getItemDrop().getItemStack().equals(randomRespawn.getItem())) {
+            event.setCancelled(true);
+        } else if (event.getItemDrop().getItemStack().equals(resetLocation.getItem())) {
+            event.setCancelled(true);
         }
 
     }
 
 
-
-
     @EventHandler
-    public void onPlayerPickupItem(PlayerPickupItemEvent event){
-        if (dataManager.getYamlPlayerGhostMode(event.getPlayer().getName())){
+    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        if (dataManager.getYamlPlayerGhostMode(event.getPlayer().getName())) {
             event.setCancelled(true);
         }
     }
