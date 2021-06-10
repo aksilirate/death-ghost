@@ -2,3 +2,4 @@ name: DeathGhost
 version: ${project.version}
 main: com.elunar.plugin.DeathGhost
 api-version: 1.16
+depend: [Vault]

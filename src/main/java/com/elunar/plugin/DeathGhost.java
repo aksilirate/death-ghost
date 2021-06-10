@@ -1,16 +1,14 @@
 package com.elunar.plugin;
 
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
 public class DeathGhost extends JavaPlugin {
 
-    private static Economy eco = null;
+    public Economy eco;
     public EventListener eventListener;
     public DataManager dataManager;
-
 
     @Override
     public void onEnable() {
@@ -37,15 +35,8 @@ public class DeathGhost extends JavaPlugin {
     }
 
     private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            return false;
-        }
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        if (rsp == null) {
-            return false;
-        }
-        eco = rsp.getProvider();
-        return eco != null;
+        return getServer().getPluginManager().getPlugin("Vault") != null;
+
     }
 
 
