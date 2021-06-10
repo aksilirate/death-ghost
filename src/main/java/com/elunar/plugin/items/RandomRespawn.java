@@ -13,7 +13,7 @@ public class RandomRespawn {
     public ItemStack getItem(){
         ItemStack itemStack = new ItemStack(Material.MAP);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName("Random Respawn");
+        itemMeta.setDisplayName("Random Respawn [✦1]");
         itemMeta.addEnchant(Enchantment.LUCK, 1, false);
         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         itemStack.setItemMeta(itemMeta);

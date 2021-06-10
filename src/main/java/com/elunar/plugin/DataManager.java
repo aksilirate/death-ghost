@@ -116,6 +116,30 @@ public class DataManager {
 
 
 
+    public void setYamlPlayerKilledByPlayer(String playerName, boolean mode) {
+        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+        YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
+
+        yaml_file.set("killed_by_player", mode);
+
+        saveYamlFile(file, yaml_file);
+    }
+
+
+    @SuppressWarnings({"ConstantConditions", "unused"})
+    public boolean getYamlPlayerKilledByPlayer(String playerName) {
+        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+        YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
+
+        if (!yaml_file.contains("killed_by_player")) {
+            setYamlPlayerGhostMode(playerName, false);
+            return false;
+        } else {
+            return (boolean) yaml_file.get("killed_by_player");
+
+        }
+
+    }
 
 
     public void saveYamlFile(File file, YamlConfiguration yaml_file) {

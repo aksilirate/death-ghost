@@ -12,13 +12,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServiceRegisterEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static org.bukkit.Bukkit.getServer;
@@ -31,6 +31,8 @@ public class EventListener implements Listener {
     public RespawnHere respawnHere = new RespawnHere();
     public RandomRespawn randomRespawn = new RandomRespawn();
     public ResetLocation resetLocation = new ResetLocation();
+
+    public HashMap<Player, Location> respawnedHere = new HashMap<>();
 
     public EventListener(DeathGhost deathGhostClass) {
         this.deathGhost = deathGhostClass;
@@ -55,6 +57,10 @@ public class EventListener implements Listener {
             player.setAllowFlight(false);
             player.setFlying(false);
 
+            while (deathGhost.deadPlayers.contains(player)) {
+                deathGhost.deadPlayers.remove(player);
+            }
+
         } else {
             dataManager.setYamlPlayerInventory(player.getName(), player.getInventory().getContents());
             dataManager.setYamlPlayerGhostMode(player.getName(), true);
@@ -65,6 +71,8 @@ public class EventListener implements Listener {
             player.setInvisible(true);
             player.setAllowFlight(true);
             player.setFlying(true);
+
+            deathGhost.deadPlayers.add(player);
         }
 
 
@@ -78,10 +86,18 @@ public class EventListener implements Listener {
             event.getPlayer().getInventory().setHeldItemSlot(0);
 
             event.getPlayer().getInventory().setItem(0, respawnHere.getItem());
-            event.getPlayer().getInventory().setItem(1, randomRespawn.getItem());
+            if (!dataManager.getYamlPlayerKilledByPlayer(player.getName())){
+                event.getPlayer().getInventory().setItem(1, randomRespawn.getItem());
+            }
+
             event.getPlayer().getInventory().setItem(8, resetLocation.getItem());
 
             event.setRespawnLocation(location);
+        } else {
+            if (respawnedHere.containsKey(player)) {
+                event.setRespawnLocation(respawnedHere.get(player));
+                respawnedHere.remove(player);
+            }
         }
     }
 
@@ -91,15 +107,48 @@ public class EventListener implements Listener {
         Player player = event.getPlayer();
         if (dataManager.getYamlPlayerGhostMode(player.getName())) {
             if (event.getItem() != null) {
+
+
+                if (player.getInventory().getHeldItemSlot() == 0) {
+                    int respawnPrice = deathGhost.getRespawnHerePrice(player);
+                    if (deathGhost.eco.getBalance(player) < respawnPrice) {
+                        player.sendMessage("You don't have enough bits.");
+                    } else {
+                        deathGhost.eco.withdrawPlayer(player, respawnPrice);
+                        respawnedHere.put(player, player.getLocation());
+                        player.setHealth(0);
+                    }
+                }
+
+
+                if (event.getItem().equals(randomRespawn.getItem())) {
+                    if (deathGhost.eco.getBalance(player) < 1.0) {
+                        player.sendMessage("You don't have enough bits.");
+                    } else {
+                        deathGhost.eco.withdrawPlayer(player, 1.0);
+                        player.setHealth(0);
+                    }
+
+                }
+
+
                 if (event.getItem().equals(resetLocation.getItem())) {
                     Location location = dataManager.getYamlPlayerDeathLocation(player.getName());
                     player.teleport(location);
                 }
-                if (event.getItem().equals(randomRespawn.getItem())) {
-                    player.setHealth(0);
-                }
+
 
             }
+            event.setCancelled(true);
+        }
+
+    }
+
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        if (dataManager.getYamlPlayerGhostMode(player.getName())) {
             event.setCancelled(true);
         }
 
@@ -156,13 +205,32 @@ public class EventListener implements Listener {
     @EventHandler
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
 
-        if (!(event instanceof Player)) {
-            return;
+        if (event instanceof Player) {
+            Player player = (Player) event;
+            if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+                event.setCancelled(true);
+            }
+
         }
 
-        Player player = (Player) event;
+
+    }
+
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
         if (dataManager.getYamlPlayerGhostMode(player.getName())) {
-            event.setCancelled(true);
+            deathGhost.deadPlayers.add(player);
+        }
+    }
+
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        while (deathGhost.deadPlayers.contains(player)) {
+            deathGhost.deadPlayers.remove(player);
         }
     }
 
