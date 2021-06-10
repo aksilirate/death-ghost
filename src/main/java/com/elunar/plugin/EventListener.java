@@ -62,9 +62,14 @@ public class EventListener implements Listener {
             }
 
         } else {
+
+            //noinspection ConstantConditions
+            dataManager.setYamlPlayerKilledByPlayer(player.getName(), player.getKiller() instanceof Player);
+
             dataManager.setYamlPlayerInventory(player.getName(), player.getInventory().getContents());
             dataManager.setYamlPlayerGhostMode(player.getName(), true);
             dataManager.setYamlPlayerDeathLocation(player.getName(), player.getLocation());
+
 
             player.getInventory().clear();
             player.setInvulnerable(true);
