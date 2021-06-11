@@ -70,7 +70,7 @@ public class EventListener implements Listener {
             dataManager.setYamlPlayerGhostMode(player.getName(), true);
             dataManager.setYamlPlayerDeathLocation(player.getName(), player.getLocation());
 
-
+            player.setBedSpawnLocation(null);
             player.getInventory().clear();
             player.setInvulnerable(true);
             player.setInvisible(true);
