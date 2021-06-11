@@ -91,7 +91,7 @@ public class EventListener implements Listener {
             event.getPlayer().getInventory().setHeldItemSlot(0);
 
             event.getPlayer().getInventory().setItem(0, respawnHere.getItem());
-            if (!dataManager.getYamlPlayerKilledByPlayer(player.getName())){
+            if (!dataManager.getYamlPlayerKilledByPlayer(player.getName())) {
                 event.getPlayer().getInventory().setItem(1, randomRespawn.getItem());
             }
 
@@ -175,10 +175,13 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onEntityPickUp(EntityPickupItemEvent event) {
-        Player player = (Player) event.getEntity();
-        if (dataManager.getYamlPlayerGhostMode(player.getName())) {
-            event.setCancelled(true);
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+                event.setCancelled(true);
+            }
         }
+
     }
 
 
