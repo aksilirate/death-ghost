@@ -2,7 +2,6 @@ package com.elunar.plugin;
 
 import com.elunar.plugin.tasks.DeathDistanceUpdater;
 import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -23,7 +22,7 @@ public class DeathGhost extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        BukkitTask deathDistanceUpdater = new DeathDistanceUpdater(this).runTaskTimer(this, 20, 20);
+        @SuppressWarnings("unused") BukkitTask deathDistanceUpdater = new DeathDistanceUpdater(this).runTaskTimer(this, 20, 20);
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
 
         dataManager = new DataManager(this);
