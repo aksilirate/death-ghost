@@ -4,6 +4,7 @@ import com.elunar.plugin.items.RandomRespawn;
 import com.elunar.plugin.items.ResetLocation;
 import com.elunar.plugin.items.RespawnHere;
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -189,9 +190,9 @@ public class EventListener implements Listener {
     @EventHandler
     public void onServiceRegister(ServiceRegisterEvent event) {
         System.out.println(event);
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
-
-        deathGhost.eco = rsp.getProvider();
+        RegisteredServiceProvider<Economy> eco_rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Permission> perms_rsp = getServer().getServicesManager().getRegistration(Permission.class);
+        deathGhost.eco = eco_rsp.getProvider();
     }
 
 

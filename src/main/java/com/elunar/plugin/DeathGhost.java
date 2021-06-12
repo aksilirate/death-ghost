@@ -2,6 +2,7 @@ package com.elunar.plugin;
 
 import com.elunar.plugin.tasks.DeathDistanceUpdater;
 import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
