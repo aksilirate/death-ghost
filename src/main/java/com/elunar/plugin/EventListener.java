@@ -90,13 +90,19 @@ public class EventListener implements Listener {
             Location location = dataManager.getYamlPlayerDeathLocation(player.getName());
             event.getPlayer().getInventory().setHeldItemSlot(0);
 
-            event.getPlayer().getInventory().setItem(1, randomRespawn.getItem());
+
+
+            if (dataManager.getYamlPlayerKilledByPlayer(player.getName())) {
+                event.getPlayer().getInventory().setItem(0, randomRespawn.getItem());
+            }
 
             if (!dataManager.getYamlPlayerKilledByPlayer(player.getName())) {
                 event.getPlayer().getInventory().setItem(0, respawnHere.getItem());
+                event.getPlayer().getInventory().setItem(1, randomRespawn.getItem());
+                event.getPlayer().getInventory().setItem(8, resetLocation.getItem());
             }
 
-            event.getPlayer().getInventory().setItem(8, resetLocation.getItem());
+
 
             event.setRespawnLocation(location);
         } else {
