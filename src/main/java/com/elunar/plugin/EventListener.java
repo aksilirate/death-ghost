@@ -47,6 +47,7 @@ public class EventListener implements Listener {
 
 
         if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+            event.setDeathMessage(player.getName() + " has respawned");
             dataManager.setYamlPlayerGhostMode(player.getName(), false);
             List<ItemStack> savedItems = dataManager.getYamlPlayerInventory(player.getName());
             ItemStack[] playerInventory = savedItems.toArray(new ItemStack[0]);
@@ -63,7 +64,7 @@ public class EventListener implements Listener {
 
         } else {
 
-            //noinspection ConstantConditions
+            //noinspection ConstantConditionsrespawnHere
             dataManager.setYamlPlayerKilledByPlayer(player.getName(), player.getKiller() instanceof Player);
 
             dataManager.setYamlPlayerInventory(player.getName(), player.getInventory().getContents());
@@ -80,8 +81,8 @@ public class EventListener implements Listener {
             deathGhost.deadPlayers.add(player);
         }
 
-
     }
+
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
@@ -102,6 +103,9 @@ public class EventListener implements Listener {
                 event.getPlayer().getInventory().setItem(8, resetLocation.getItem());
             }
 
+
+            player.setAllowFlight(true);
+            player.setFlying(true);
 
 
             event.setRespawnLocation(location);

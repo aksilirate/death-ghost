@@ -5,6 +5,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -33,6 +34,11 @@ public class DeathGhost extends JavaPlugin {
             System.out.println("Disabled due to no Vault dependency found!");
             getServer().getPluginManager().disablePlugin(this);
             return;
+        }else{
+            RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+            if (rsp != null){
+                eco = rsp.getProvider();
+            }
         }
 
 
