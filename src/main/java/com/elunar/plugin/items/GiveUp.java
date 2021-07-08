@@ -7,13 +7,14 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
 
 
-public class RandomRespawn {
+public class GiveUp {
     public ItemStack getItem(){
-        ItemStack itemStack = new ItemStack(Material.MAP);
+        ItemStack itemStack = new ItemStack(Material.BONE);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName("Random Respawn [1✦]");
+        itemMeta.setDisplayName("Give Up");
         itemMeta.addEnchant(Enchantment.LUCK, 1, false);
         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         itemStack.setItemMeta(itemMeta);

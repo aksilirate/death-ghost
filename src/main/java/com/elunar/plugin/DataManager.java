@@ -141,6 +141,30 @@ public class DataManager {
 
     }
 
+    public void setYamlPlayerGaveUp(String playerName, boolean gaveUp) {
+        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+        YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
+
+        yaml_file.set("gave_up", gaveUp);
+
+        saveYamlFile(file, yaml_file);
+    }
+
+
+    @SuppressWarnings({"ConstantConditions", "unused"})
+    public boolean getYamlPlayerGaveUp(String playerName) {
+        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+        YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
+
+        if (!yaml_file.contains("gave_up")) {
+            setYamlPlayerGhostMode(playerName, false);
+            return false;
+        } else {
+            return (boolean) yaml_file.get("gave_up");
+
+        }
+
+    }
 
     public void saveYamlFile(File file, YamlConfiguration yaml_file) {
         try {

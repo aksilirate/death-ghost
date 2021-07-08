@@ -1,17 +1,16 @@
 package com.elunar.plugin;
 
+import com.elunar.plugin.items.GiveUp;
 import com.elunar.plugin.items.RandomRespawn;
 import com.elunar.plugin.items.ResetLocation;
 import com.elunar.plugin.items.RespawnHere;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServiceRegisterEvent;
@@ -30,7 +29,9 @@ public class EventListener implements Listener {
     public DataManager dataManager;
     public RespawnHere respawnHere = new RespawnHere();
     public RandomRespawn randomRespawn = new RandomRespawn();
+    public GiveUp giveUp = new GiveUp();
     public ResetLocation resetLocation = new ResetLocation();
+
 
     public HashMap<Player, Location> respawnedHere = new HashMap<>();
 
@@ -45,13 +46,34 @@ public class EventListener implements Listener {
 
         Player player = event.getEntity();
 
+        System.out.println(player.getLastDamageCause());
 
         if (dataManager.getYamlPlayerGhostMode(player.getName())) {
-            event.setDeathMessage(player.getName() + " has respawned");
-            dataManager.setYamlPlayerGhostMode(player.getName(), false);
+
             List<ItemStack> savedItems = dataManager.getYamlPlayerInventory(player.getName());
             ItemStack[] playerInventory = savedItems.toArray(new ItemStack[0]);
-            player.getInventory().setContents(playerInventory);
+
+            if (dataManager.getYamlPlayerGaveUp(player.getName())) {
+                Location location = dataManager.getYamlPlayerDeathLocation(player.getName());
+                for (ItemStack itemStack : playerInventory) {
+                    if (itemStack != null) {
+                        if (!itemStack.getType().equals(Material.KNOWLEDGE_BOOK)) {
+                            player.getWorld().dropItemNaturally(location, itemStack);
+                        }
+                    }
+                }
+
+
+                player.getInventory().clear();
+                player.getInventory().setItem(8, playerInventory[8]);
+                player.setExp(0);
+
+            } else {
+                player.getInventory().setContents(playerInventory);
+            }
+
+            event.setDeathMessage(player.getName() + " has respawned");
+            dataManager.setYamlPlayerGhostMode(player.getName(), false);
 
             player.setInvulnerable(false);
             player.setInvisible(false);
@@ -60,7 +82,9 @@ public class EventListener implements Listener {
 
             while (deathGhost.deadPlayers.contains(player)) {
                 deathGhost.deadPlayers.remove(player);
+
             }
+
 
         } else {
 
@@ -89,8 +113,15 @@ public class EventListener implements Listener {
         Player player = event.getPlayer();
         if (dataManager.getYamlPlayerGhostMode(player.getName())) {
             Location location = dataManager.getYamlPlayerDeathLocation(player.getName());
-            event.getPlayer().getInventory().setHeldItemSlot(0);
 
+            if (player.getLastDamageCause() != null) {
+                if (player.getLastDamageCause().equals(EntityDamageEvent.DamageCause.VOID)) {
+                    location.add(0.0, 60.0, 0.0);
+                }
+            }
+
+
+            event.getPlayer().getInventory().setHeldItemSlot(0);
 
 
             if (dataManager.getYamlPlayerKilledByPlayer(player.getName())) {
@@ -100,6 +131,7 @@ public class EventListener implements Listener {
             if (!dataManager.getYamlPlayerKilledByPlayer(player.getName())) {
                 event.getPlayer().getInventory().setItem(0, respawnHere.getItem());
                 event.getPlayer().getInventory().setItem(1, randomRespawn.getItem());
+                event.getPlayer().getInventory().setItem(7, giveUp.getItem());
                 event.getPlayer().getInventory().setItem(8, resetLocation.getItem());
             }
 
@@ -109,6 +141,7 @@ public class EventListener implements Listener {
 
 
             event.setRespawnLocation(location);
+
         } else {
             if (respawnedHere.containsKey(player)) {
                 event.setRespawnLocation(respawnedHere.get(player));
@@ -130,6 +163,7 @@ public class EventListener implements Listener {
                     if (deathGhost.eco.getBalance(player) < respawnPrice) {
                         player.sendMessage("You don't have enough bits.");
                     } else {
+                        dataManager.setYamlPlayerGaveUp(player.getName(), false);
                         deathGhost.eco.withdrawPlayer(player, respawnPrice);
                         respawnedHere.put(player, player.getLocation());
                         player.setHealth(0);
@@ -141,12 +175,18 @@ public class EventListener implements Listener {
                     if (deathGhost.eco.getBalance(player) < 1.0) {
                         player.sendMessage("You don't have enough bits.");
                     } else {
+                        dataManager.setYamlPlayerGaveUp(player.getName(), false);
                         deathGhost.eco.withdrawPlayer(player, 1.0);
                         player.setHealth(0);
                     }
 
                 }
 
+                if (event.getItem().equals(giveUp.getItem())) {
+                    dataManager.setYamlPlayerGaveUp(player.getName(), true);
+                    player.setHealth(0);
+
+                }
 
                 if (event.getItem().equals(resetLocation.getItem())) {
                     Location location = dataManager.getYamlPlayerDeathLocation(player.getName());
@@ -176,6 +216,8 @@ public class EventListener implements Listener {
         if (event.getItemDrop().getItemStack().equals(respawnHere.getItem())) {
             event.setCancelled(true);
         } else if (event.getItemDrop().getItemStack().equals(randomRespawn.getItem())) {
+            event.setCancelled(true);
+        } else if (event.getItemDrop().getItemStack().equals(giveUp.getItem())) {
             event.setCancelled(true);
         } else if (event.getItemDrop().getItemStack().equals(resetLocation.getItem())) {
             event.setCancelled(true);
