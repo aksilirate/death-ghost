@@ -295,4 +295,13 @@ public class EventListener implements Listener {
     }
 
 
+    @EventHandler
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+            event.setCancelled(true);
+        }
+    }
+
+
 }
