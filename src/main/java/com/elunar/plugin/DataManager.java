@@ -116,6 +116,7 @@ public class DataManager {
 
 
 
+
     public void setYamlPlayerKilledByPlayer(String playerName, boolean mode) {
         File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
@@ -165,6 +166,36 @@ public class DataManager {
         }
 
     }
+
+
+    public void setYamlPlayerBedRespawned(String playerName, boolean bedRespawned) {
+        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+        YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
+
+        yaml_file.set("bed_respawned", bedRespawned);
+
+        saveYamlFile(file, yaml_file);
+    }
+
+
+    @SuppressWarnings({"ConstantConditions", "unused"})
+    public boolean getYamlPlayerBedRespawned(String playerName) {
+        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+        YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
+
+        if (!yaml_file.contains("bed_respawned")) {
+            setYamlPlayerGhostMode(playerName, false);
+            return false;
+        } else {
+            return (boolean) yaml_file.get("bed_respawned");
+
+        }
+
+    }
+
+
+
+
 
     public void saveYamlFile(File file, YamlConfiguration yaml_file) {
         try {

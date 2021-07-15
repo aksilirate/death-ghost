@@ -44,7 +44,7 @@ public class DeathGhost extends JavaPlugin {
 
         if (!getDataFolder().exists()) {
             if (getDataFolder().mkdirs()) {
-                getLogger().info("data dir was created.");
+                getLogger().info("Data dir was created.");
             }
         }
 

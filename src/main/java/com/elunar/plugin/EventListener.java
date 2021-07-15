@@ -1,9 +1,6 @@
 package com.elunar.plugin;
 
-import com.elunar.plugin.items.GiveUp;
-import com.elunar.plugin.items.RandomRespawn;
-import com.elunar.plugin.items.ResetLocation;
-import com.elunar.plugin.items.RespawnHere;
+import com.elunar.plugin.items.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -28,6 +25,7 @@ public class EventListener implements Listener {
     public DeathGhost deathGhost;
     public DataManager dataManager;
     public RespawnHere respawnHere = new RespawnHere();
+    public BedRespawn bedRespawn = new BedRespawn();
     public RandomRespawn randomRespawn = new RandomRespawn();
     public GiveUp giveUp = new GiveUp();
     public ResetLocation resetLocation = new ResetLocation();
@@ -46,7 +44,6 @@ public class EventListener implements Listener {
 
         Player player = event.getEntity();
 
-        System.out.println(player.getLastDamageCause());
 
         if (dataManager.getYamlPlayerGhostMode(player.getName())) {
 
@@ -95,7 +92,6 @@ public class EventListener implements Listener {
             dataManager.setYamlPlayerGhostMode(player.getName(), true);
             dataManager.setYamlPlayerDeathLocation(player.getName(), player.getLocation());
 
-            player.setBedSpawnLocation(null);
             player.getInventory().clear();
             player.setInvulnerable(true);
             player.setInvisible(true);
@@ -111,6 +107,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
+
         if (dataManager.getYamlPlayerGhostMode(player.getName())) {
             Location location = dataManager.getYamlPlayerDeathLocation(player.getName());
 
@@ -125,12 +122,13 @@ public class EventListener implements Listener {
 
 
             if (dataManager.getYamlPlayerKilledByPlayer(player.getName())) {
-                event.getPlayer().getInventory().setItem(0, randomRespawn.getItem());
+                event.getPlayer().getInventory().setItem(0, bedRespawn.getItem());
+                event.getPlayer().getInventory().setItem(1, giveUp.getItem());
             }
 
             if (!dataManager.getYamlPlayerKilledByPlayer(player.getName())) {
                 event.getPlayer().getInventory().setItem(0, respawnHere.getItem());
-                event.getPlayer().getInventory().setItem(1, randomRespawn.getItem());
+                event.getPlayer().getInventory().setItem(1, bedRespawn.getItem());
                 event.getPlayer().getInventory().setItem(7, giveUp.getItem());
                 event.getPlayer().getInventory().setItem(8, resetLocation.getItem());
             }
@@ -143,7 +141,9 @@ public class EventListener implements Listener {
             event.setRespawnLocation(location);
 
         } else {
-            if (respawnedHere.containsKey(player)) {
+            if (dataManager.getYamlPlayerGaveUp(player.getName()) || dataManager.getYamlPlayerBedRespawned(player.getName())) {
+                event.setRespawnLocation(player.getBedSpawnLocation());
+            } else if (respawnedHere.containsKey(player)) {
                 event.setRespawnLocation(respawnedHere.get(player));
                 respawnedHere.remove(player);
             }
@@ -164,10 +164,24 @@ public class EventListener implements Listener {
                         player.sendMessage("You don't have enough bits.");
                     } else {
                         dataManager.setYamlPlayerGaveUp(player.getName(), false);
+                        dataManager.setYamlPlayerBedRespawned(player.getName(), false);
                         deathGhost.eco.withdrawPlayer(player, respawnPrice);
                         respawnedHere.put(player, player.getLocation());
                         player.setHealth(0);
                     }
+                }
+
+
+                if (event.getItem().equals(bedRespawn.getItem())) {
+                    if (deathGhost.eco.getBalance(player) < 1.0) {
+                        player.sendMessage("You don't have enough bits.");
+                    } else {
+                        dataManager.setYamlPlayerGaveUp(player.getName(), false);
+                        dataManager.setYamlPlayerBedRespawned(player.getName(), true);
+                        deathGhost.eco.withdrawPlayer(player, 1.0);
+                        player.setHealth(0);
+                    }
+
                 }
 
 
@@ -176,6 +190,7 @@ public class EventListener implements Listener {
                         player.sendMessage("You don't have enough bits.");
                     } else {
                         dataManager.setYamlPlayerGaveUp(player.getName(), false);
+                        dataManager.setYamlPlayerBedRespawned(player.getName(), false);
                         deathGhost.eco.withdrawPlayer(player, 1.0);
                         player.setHealth(0);
                     }
@@ -184,6 +199,7 @@ public class EventListener implements Listener {
 
                 if (event.getItem().equals(giveUp.getItem())) {
                     dataManager.setYamlPlayerGaveUp(player.getName(), true);
+                    dataManager.setYamlPlayerBedRespawned(player.getName(), false);
                     player.setHealth(0);
 
                 }
@@ -215,6 +231,8 @@ public class EventListener implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         if (event.getItemDrop().getItemStack().equals(respawnHere.getItem())) {
             event.setCancelled(true);
+        } else if (event.getItemDrop().getItemStack().equals(bedRespawn.getItem())) {
+            event.setCancelled(true);
         } else if (event.getItemDrop().getItemStack().equals(randomRespawn.getItem())) {
             event.setCancelled(true);
         } else if (event.getItemDrop().getItemStack().equals(giveUp.getItem())) {
@@ -241,7 +259,6 @@ public class EventListener implements Listener {
     @SuppressWarnings("ConstantConditions")
     @EventHandler
     public void onServiceRegister(ServiceRegisterEvent event) {
-        System.out.println(event);
         RegisteredServiceProvider<Economy> eco_rsp = getServer().getServicesManager().getRegistration(Economy.class);
         deathGhost.eco = eco_rsp.getProvider();
     }
