@@ -264,6 +264,23 @@ public class EventListener implements Listener {
     }
 
 
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player){
+            Player player = (Player) event.getEntity();
+            if (dataManager.getYamlPlayerGhostMode(player.getName())){
+                if (event.getCause().equals(EntityDamageEvent.DamageCause.VOID)){
+                    event.setCancelled(true);
+
+                    Location location = player.getLocation();
+                    location.add(0,30,0);
+                    player.teleport(location);
+                }
+            }
+        }
+    }
+
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 

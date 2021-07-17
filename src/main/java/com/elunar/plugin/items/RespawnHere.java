@@ -1,5 +1,6 @@
 package com.elunar.plugin.items;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -12,7 +13,7 @@ public class RespawnHere {
         ItemStack itemStack = new ItemStack(Material.CLOCK);
         ItemMeta itemMeta = itemStack.getItemMeta();
         if (itemMeta != null){
-            itemMeta.setDisplayName("Respawn Here");
+            itemMeta.setDisplayName(ChatColor.RESET + "" + ChatColor.GOLD + "Respawn Here | Keep Inventory");
             itemMeta.addEnchant(Enchantment.LUCK, 1, false);
             itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
