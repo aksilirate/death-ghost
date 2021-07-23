@@ -232,15 +232,11 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (event.getItemDrop().getItemStack().equals(respawnHere.getItem())) {
-            event.setCancelled(true);
-        } else if (event.getItemDrop().getItemStack().equals(bedRespawn.getItem())) {
-            event.setCancelled(true);
-        } else if (event.getItemDrop().getItemStack().equals(randomRespawn.getItem())) {
-            event.setCancelled(true);
-        } else if (event.getItemDrop().getItemStack().equals(giveUp.getItem())) {
-            event.setCancelled(true);
-        } else if (event.getItemDrop().getItemStack().equals(resetLocation.getItem())) {
+
+        Player player = (Player) event.getPlayer();
+        String playerUuid = player.getUniqueId().toString();
+
+        if (dataManager.getYamlPlayerGhostMode(playerUuid)){
             event.setCancelled(true);
         }
 
