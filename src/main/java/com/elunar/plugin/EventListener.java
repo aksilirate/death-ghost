@@ -43,15 +43,15 @@ public class EventListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
 
         Player player = event.getEntity();
+        String playerUuid = player.getUniqueId().toString();
 
+        if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
 
-        if (dataManager.getYamlPlayerGhostMode(player.getName())) {
-
-            List<ItemStack> savedItems = dataManager.getYamlPlayerInventory(player.getName());
+            List<ItemStack> savedItems = dataManager.getYamlPlayerInventory(playerUuid);
             ItemStack[] playerInventory = savedItems.toArray(new ItemStack[0]);
 
-            if (dataManager.getYamlPlayerGaveUp(player.getName())) {
-                Location location = dataManager.getYamlPlayerDeathLocation(player.getName());
+            if (dataManager.getYamlPlayerGaveUp(playerUuid)) {
+                Location location = dataManager.getYamlPlayerDeathLocation(playerUuid);
                 for (ItemStack itemStack : playerInventory) {
                     if (itemStack != null) {
                         if (!itemStack.getType().equals(Material.KNOWLEDGE_BOOK)) {
@@ -70,7 +70,7 @@ public class EventListener implements Listener {
             }
 
             event.setDeathMessage(player.getName() + " has respawned");
-            dataManager.setYamlPlayerGhostMode(player.getName(), false);
+            dataManager.setYamlPlayerGhostMode(playerUuid, false);
 
             player.setInvulnerable(false);
             player.setInvisible(false);
@@ -86,11 +86,11 @@ public class EventListener implements Listener {
         } else {
 
             //noinspection ConstantConditionsrespawnHere
-            dataManager.setYamlPlayerKilledByPlayer(player.getName(), player.getKiller() instanceof Player);
+            dataManager.setYamlPlayerKilledByPlayer(playerUuid, player.getKiller() instanceof Player);
 
-            dataManager.setYamlPlayerInventory(player.getName(), player.getInventory().getContents());
-            dataManager.setYamlPlayerGhostMode(player.getName(), true);
-            dataManager.setYamlPlayerDeathLocation(player.getName(), player.getLocation());
+            dataManager.setYamlPlayerInventory(playerUuid, player.getInventory().getContents());
+            dataManager.setYamlPlayerGhostMode(playerUuid, true);
+            dataManager.setYamlPlayerDeathLocation(playerUuid, player.getLocation());
 
             player.getInventory().clear();
             player.setInvulnerable(true);
@@ -107,9 +107,10 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
+        String playerUuid = player.getUniqueId().toString();
 
-        if (dataManager.getYamlPlayerGhostMode(player.getName())) {
-            Location location = dataManager.getYamlPlayerDeathLocation(player.getName());
+        if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
+            Location location = dataManager.getYamlPlayerDeathLocation(playerUuid);
 
             if (player.getLastDamageCause() != null) {
                 if (player.getLastDamageCause().equals(EntityDamageEvent.DamageCause.VOID)) {
@@ -121,12 +122,12 @@ public class EventListener implements Listener {
             event.getPlayer().getInventory().setHeldItemSlot(0);
 
 
-            if (dataManager.getYamlPlayerKilledByPlayer(player.getName())) {
+            if (dataManager.getYamlPlayerKilledByPlayer(playerUuid)) {
                 event.getPlayer().getInventory().setItem(0, bedRespawn.getItem());
                 event.getPlayer().getInventory().setItem(1, giveUp.getItem());
             }
 
-            if (!dataManager.getYamlPlayerKilledByPlayer(player.getName())) {
+            if (!dataManager.getYamlPlayerKilledByPlayer(playerUuid)) {
                 event.getPlayer().getInventory().setItem(0, respawnHere.getItem());
                 event.getPlayer().getInventory().setItem(1, bedRespawn.getItem());
                 event.getPlayer().getInventory().setItem(7, giveUp.getItem());
@@ -141,7 +142,7 @@ public class EventListener implements Listener {
             event.setRespawnLocation(location);
 
         } else {
-            if (dataManager.getYamlPlayerGaveUp(player.getName()) || dataManager.getYamlPlayerBedRespawned(player.getName())) {
+            if (dataManager.getYamlPlayerGaveUp(playerUuid) || dataManager.getYamlPlayerBedRespawned(playerUuid)) {
                 event.setRespawnLocation(player.getBedSpawnLocation());
             } else if (respawnedHere.containsKey(player)) {
                 event.setRespawnLocation(respawnedHere.get(player));
@@ -154,7 +155,8 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+        String playerUuid = player.getUniqueId().toString();
+        if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
             if (event.getItem() != null) {
 
 
@@ -163,8 +165,8 @@ public class EventListener implements Listener {
                     if (deathGhost.eco.getBalance(player) < respawnPrice) {
                         player.sendMessage("You don't have enough bits.");
                     } else {
-                        dataManager.setYamlPlayerGaveUp(player.getName(), false);
-                        dataManager.setYamlPlayerBedRespawned(player.getName(), false);
+                        dataManager.setYamlPlayerGaveUp(playerUuid, false);
+                        dataManager.setYamlPlayerBedRespawned(playerUuid, false);
                         deathGhost.eco.withdrawPlayer(player, respawnPrice);
                         respawnedHere.put(player, player.getLocation());
                         player.setHealth(0);
@@ -174,10 +176,10 @@ public class EventListener implements Listener {
 
                 if (event.getItem().equals(bedRespawn.getItem())) {
                     if (deathGhost.eco.getBalance(player) < 1.0) {
-                        player.sendMessage("You don't have enough bits.");
+                        player.sendMessage("You don't have enough bits");
                     } else {
-                        dataManager.setYamlPlayerGaveUp(player.getName(), false);
-                        dataManager.setYamlPlayerBedRespawned(player.getName(), true);
+                        dataManager.setYamlPlayerGaveUp(playerUuid, false);
+                        dataManager.setYamlPlayerBedRespawned(playerUuid, true);
                         deathGhost.eco.withdrawPlayer(player, 1.0);
                         player.setHealth(0);
                     }
@@ -187,10 +189,10 @@ public class EventListener implements Listener {
 
                 if (event.getItem().equals(randomRespawn.getItem())) {
                     if (deathGhost.eco.getBalance(player) < 1.0) {
-                        player.sendMessage("You don't have enough bits.");
+                        player.sendMessage("You don't have enough bits");
                     } else {
-                        dataManager.setYamlPlayerGaveUp(player.getName(), false);
-                        dataManager.setYamlPlayerBedRespawned(player.getName(), false);
+                        dataManager.setYamlPlayerGaveUp(playerUuid, false);
+                        dataManager.setYamlPlayerBedRespawned(playerUuid, false);
                         deathGhost.eco.withdrawPlayer(player, 1.0);
                         player.setHealth(0);
                     }
@@ -198,14 +200,14 @@ public class EventListener implements Listener {
                 }
 
                 if (event.getItem().equals(giveUp.getItem())) {
-                    dataManager.setYamlPlayerGaveUp(player.getName(), true);
-                    dataManager.setYamlPlayerBedRespawned(player.getName(), false);
+                    dataManager.setYamlPlayerGaveUp(playerUuid, true);
+                    dataManager.setYamlPlayerBedRespawned(playerUuid, false);
                     player.setHealth(0);
 
                 }
 
                 if (event.getItem().equals(resetLocation.getItem())) {
-                    Location location = dataManager.getYamlPlayerDeathLocation(player.getName());
+                    Location location = dataManager.getYamlPlayerDeathLocation(playerUuid);
                     player.teleport(location);
                 }
 
@@ -220,7 +222,8 @@ public class EventListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
-        if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+        String playerUuid = player.getUniqueId().toString();
+        if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
             event.setCancelled(true);
         }
 
@@ -248,7 +251,8 @@ public class EventListener implements Listener {
     public void onEntityPickUp(EntityPickupItemEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+            String playerUuid = player.getUniqueId().toString();
+            if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
                 event.setCancelled(true);
             }
         }
@@ -269,7 +273,8 @@ public class EventListener implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player){
             Player player = (Player) event.getEntity();
-            if (dataManager.getYamlPlayerGhostMode(player.getName())){
+            String playerUuid = player.getUniqueId().toString();
+            if (dataManager.getYamlPlayerGhostMode(playerUuid)){
                 if (event.getCause().equals(EntityDamageEvent.DamageCause.VOID)){
                     event.setCancelled(true);
 
@@ -289,7 +294,9 @@ public class EventListener implements Listener {
         }
 
         Player player = (Player) event.getDamager();
-        if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+        String playerUuid = player.getUniqueId().toString();
+
+        if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
             event.setCancelled(true);
         }
 
@@ -301,7 +308,9 @@ public class EventListener implements Listener {
 
         if (event instanceof Player) {
             Player player = (Player) event;
-            if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+            String playerUuid = player.getUniqueId().toString();
+
+            if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
                 event.setCancelled(true);
             }
 
@@ -314,7 +323,8 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+        String playerUuid = player.getUniqueId().toString();
+        if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
             deathGhost.deadPlayers.add(player);
         }
     }
@@ -332,7 +342,8 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        if (dataManager.getYamlPlayerGhostMode(player.getName())) {
+        String playerUuid = player.getUniqueId().toString();
+        if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
             event.setCancelled(true);
         }
     }

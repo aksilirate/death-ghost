@@ -1,7 +1,6 @@
 package com.elunar.plugin;
 
 import org.bukkit.Location;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -21,8 +20,8 @@ public class DataManager {
         this.deathGhost = deathGhostClass;
     }
 
-    public void setYamlPlayerInventory(String playerName, ItemStack[] inventory) {
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public void setYamlPlayerInventory(String playerUuid, ItemStack[] inventory) {
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         for (int i = 0; i < inventory.length; i++){
@@ -42,8 +41,8 @@ public class DataManager {
     }
 
     @SuppressWarnings({"unused", "rawtypes"})
-    public List<ItemStack> getYamlPlayerInventory(String playerName){
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public List<ItemStack> getYamlPlayerInventory(String playerUuid){
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
         ConfigurationSection inventory = yaml_file.getConfigurationSection("inventory");
 
@@ -62,8 +61,8 @@ public class DataManager {
 
     }
 
-    public void setYamlPlayerGhostMode(String playerName, boolean mode) {
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public void setYamlPlayerGhostMode(String playerUuid, boolean mode) {
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         yaml_file.set("ghost_mode", mode);
@@ -73,12 +72,12 @@ public class DataManager {
 
 
     @SuppressWarnings({"ConstantConditions", "unused"})
-    public boolean getYamlPlayerGhostMode(String playerName) {
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public boolean getYamlPlayerGhostMode(String playerUuid) {
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         if (!yaml_file.contains("ghost_mode")) {
-            setYamlPlayerGhostMode(playerName, false);
+            setYamlPlayerGhostMode(playerUuid, false);
             return false;
         } else {
             return (boolean) yaml_file.get("ghost_mode");
@@ -88,8 +87,8 @@ public class DataManager {
     }
 
 
-    public void setYamlPlayerDeathLocation(String playerName, Location location){
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public void setYamlPlayerDeathLocation(String playerUuid, Location location){
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         yaml_file.set("death_location", location);
@@ -99,13 +98,13 @@ public class DataManager {
 
 
     @SuppressWarnings("unused")
-    public Location getYamlPlayerDeathLocation(String playerName) {
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public Location getYamlPlayerDeathLocation(String playerUuid) {
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         if (!yaml_file.contains("death_location")) {
             Location defaultLocation = new Location(deathGhost.getServer().getWorld("world"), 0.0, 0.0, 0.0);
-            setYamlPlayerDeathLocation(playerName, defaultLocation);
+            setYamlPlayerDeathLocation(playerUuid, defaultLocation);
             return defaultLocation;
         } else {
             return (Location) yaml_file.get("death_location");
@@ -117,8 +116,8 @@ public class DataManager {
 
 
 
-    public void setYamlPlayerKilledByPlayer(String playerName, boolean mode) {
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public void setYamlPlayerKilledByPlayer(String playerUuid, boolean mode) {
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         yaml_file.set("killed_by_player", mode);
@@ -128,12 +127,12 @@ public class DataManager {
 
 
     @SuppressWarnings({"ConstantConditions", "unused"})
-    public boolean getYamlPlayerKilledByPlayer(String playerName) {
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public boolean getYamlPlayerKilledByPlayer(String playerUuid) {
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         if (!yaml_file.contains("killed_by_player")) {
-            setYamlPlayerGhostMode(playerName, false);
+            setYamlPlayerGhostMode(playerUuid, false);
             return false;
         } else {
             return (boolean) yaml_file.get("killed_by_player");
@@ -142,8 +141,8 @@ public class DataManager {
 
     }
 
-    public void setYamlPlayerGaveUp(String playerName, boolean gaveUp) {
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public void setYamlPlayerGaveUp(String playerUuid, boolean gaveUp) {
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         yaml_file.set("gave_up", gaveUp);
@@ -153,12 +152,12 @@ public class DataManager {
 
 
     @SuppressWarnings({"ConstantConditions", "unused"})
-    public boolean getYamlPlayerGaveUp(String playerName) {
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public boolean getYamlPlayerGaveUp(String playerUuid) {
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         if (!yaml_file.contains("gave_up")) {
-            setYamlPlayerGhostMode(playerName, false);
+            setYamlPlayerGhostMode(playerUuid, false);
             return false;
         } else {
             return (boolean) yaml_file.get("gave_up");
@@ -168,8 +167,8 @@ public class DataManager {
     }
 
 
-    public void setYamlPlayerBedRespawned(String playerName, boolean bedRespawned) {
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public void setYamlPlayerBedRespawned(String playerUuid, boolean bedRespawned) {
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         yaml_file.set("bed_respawned", bedRespawned);
@@ -179,12 +178,12 @@ public class DataManager {
 
 
     @SuppressWarnings({"ConstantConditions", "unused"})
-    public boolean getYamlPlayerBedRespawned(String playerName) {
-        File file = new File(deathGhost.getDataFolder(), playerName + ".yml");
+    public boolean getYamlPlayerBedRespawned(String playerUuid) {
+        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
         if (!yaml_file.contains("bed_respawned")) {
-            setYamlPlayerGhostMode(playerName, false);
+            setYamlPlayerGhostMode(playerUuid, false);
             return false;
         } else {
             return (boolean) yaml_file.get("bed_respawned");

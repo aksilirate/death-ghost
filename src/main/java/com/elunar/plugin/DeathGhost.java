@@ -58,7 +58,8 @@ public class DeathGhost extends JavaPlugin {
 
 
     public int getRespawnHerePrice(Player player){
-        Location originalLocation = dataManager.getYamlPlayerDeathLocation(player.getName());
+        String playerUuid = player.getUniqueId().toString();
+        Location originalLocation = dataManager.getYamlPlayerDeathLocation(playerUuid);
         return (int) originalLocation.distance(player.getLocation()) + 1;
     }
 
