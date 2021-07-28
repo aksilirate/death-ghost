@@ -4,6 +4,7 @@ import com.elunar.plugin.items.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -52,18 +53,21 @@ public class EventListener implements Listener {
 
             if (dataManager.getYamlPlayerGaveUp(playerUuid)) {
                 Location location = dataManager.getYamlPlayerDeathLocation(playerUuid);
+
+                player.setLevel(0);
+                player.setExp(0);
+
                 for (ItemStack itemStack : playerInventory) {
                     if (itemStack != null) {
                         if (!itemStack.getType().equals(Material.KNOWLEDGE_BOOK)) {
                             player.getWorld().dropItemNaturally(location, itemStack);
+                            player.getWorld().spawn(location, ExperienceOrb.class);
                         }
                     }
                 }
 
-
                 player.getInventory().clear();
                 player.getInventory().setItem(8, playerInventory[8]);
-                player.setExp(0);
 
             } else {
                 player.getInventory().setContents(playerInventory);
@@ -339,6 +343,7 @@ public class EventListener implements Listener {
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String playerUuid = player.getUniqueId().toString();
+
         if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
             event.setCancelled(true);
         }

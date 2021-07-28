@@ -25,7 +25,7 @@ public class DeathDistanceUpdater extends BukkitRunnable {
     public void run() {
         for (Player player: deathGhost.deadPlayers){
             ItemStack respawnHere =  player.getInventory().getItem(0);
-            if (respawnHere != null){
+            if (respawnHere != null && !dataManager.getYamlPlayerKilledByPlayer(player.getUniqueId().toString())){
                 ItemMeta itemMeta = respawnHere.getItemMeta();
                 int distance = deathGhost.getRespawnHerePrice(player);
                 itemMeta.setDisplayName(ChatColor.RESET + ""  + ChatColor.YELLOW + "Respawn Here | Keep Inventory | Keep XP [✦" + String.valueOf(distance) + "]");
