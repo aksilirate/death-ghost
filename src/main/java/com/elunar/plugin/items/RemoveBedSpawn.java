@@ -10,9 +10,9 @@ public class RemoveBedSpawn {
 
 
     public ItemStack getItem(){
-        ItemStack itemStack = new ItemStack(Material.RED_BED);
+        ItemStack itemStack = new ItemStack(Material.BARRIER);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName("Remove Your Bed Spawn");
+        itemMeta.setDisplayName("Remove Your Bed Spawn Point");
         itemMeta.addEnchant(Enchantment.LUCK, 1, false);
         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         itemStack.setItemMeta(itemMeta);

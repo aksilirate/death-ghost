@@ -9,6 +9,7 @@ import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
@@ -82,6 +83,9 @@ public class EventListener implements Listener {
             player.setAllowFlight(false);
             player.setFlying(false);
 
+            player.setFlySpeed(0.1f);
+            player.setWalkSpeed(0.2f);
+
             while (deathGhost.deadPlayers.contains(player)) {
                 deathGhost.deadPlayers.remove(player);
 
@@ -102,6 +106,9 @@ public class EventListener implements Listener {
             player.setInvisible(true);
             player.setAllowFlight(true);
             player.setFlying(true);
+
+            player.setFlySpeed(0.01f);
+            player.setWalkSpeed(0.1f);
 
             deathGhost.deadPlayers.add(player);
         }
@@ -167,10 +174,16 @@ public class EventListener implements Listener {
             if (event.getItem() != null) {
 
 
+                if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK)){
+                    event.setCancelled(true);
+                    return;
+                }
+
+
                 if (player.getInventory().getHeldItemSlot() == 0) {
-                    int respawnPrice = deathGhost.getRespawnHerePrice(player);
+                    int respawnPrice = deathGhost.getRespawnHerePrice(player) + 2;
                     if (deathGhost.eco.getBalance(player) < respawnPrice) {
-                        player.sendMessage("You don't have enough bits.");
+                        player.sendMessage(ChatColor.RED + "You don't have enough bits");
                     } else {
                         dataManager.setYamlPlayerGaveUp(playerUuid, false);
                         deathGhost.eco.withdrawPlayer(player, respawnPrice);
@@ -182,7 +195,7 @@ public class EventListener implements Listener {
 
                 if (event.getItem().equals(bedRespawn.getItem())) {
                     if (deathGhost.eco.getBalance(player) < 1.0) {
-                        player.sendMessage("You don't have enough bits");
+                        player.sendMessage(ChatColor.RED + "You don't have enough bits");
                     } else {
                         dataManager.setYamlPlayerGaveUp(playerUuid, false);
                         deathGhost.eco.withdrawPlayer(player, 1.0);
