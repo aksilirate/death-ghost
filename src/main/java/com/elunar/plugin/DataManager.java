@@ -167,32 +167,6 @@ public class DataManager {
     }
 
 
-    public void setYamlPlayerBedRespawned(String playerUuid, boolean bedRespawned) {
-        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
-        YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
-
-        yaml_file.set("bed_respawned", bedRespawned);
-
-        saveYamlFile(file, yaml_file);
-    }
-
-
-    @SuppressWarnings({"ConstantConditions", "unused"})
-    public boolean getYamlPlayerBedRespawned(String playerUuid) {
-        File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
-        YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
-
-        if (!yaml_file.contains("bed_respawned")) {
-            setYamlPlayerGhostMode(playerUuid, false);
-            return false;
-        } else {
-            return (boolean) yaml_file.get("bed_respawned");
-
-        }
-
-    }
-
-
 
 
 

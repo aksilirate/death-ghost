@@ -2,6 +2,7 @@ package com.elunar.plugin;
 
 import com.elunar.plugin.items.*;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ExperienceOrb;
@@ -27,7 +28,7 @@ public class EventListener implements Listener {
     public DataManager dataManager;
     public RespawnHere respawnHere = new RespawnHere();
     public BedRespawn bedRespawn = new BedRespawn();
-    public RandomRespawn randomRespawn = new RandomRespawn();
+    public RemoveBedSpawn removeBedSpawn = new RemoveBedSpawn();
     public GiveUp giveUp = new GiveUp();
     public ResetLocation resetLocation = new ResetLocation();
 
@@ -90,7 +91,7 @@ public class EventListener implements Listener {
         } else {
 
             //noinspection ConstantConditionsrespawnHere
-            dataManager.setYamlPlayerKilledByPlayer(playerUuid, player.getKiller() instanceof Player);
+            dataManager.setYamlPlayerKilledByPlayer(playerUuid, player.getKiller() != null);
 
             dataManager.setYamlPlayerInventory(playerUuid, player.getInventory().getContents());
             dataManager.setYamlPlayerGhostMode(playerUuid, true);
@@ -128,12 +129,14 @@ public class EventListener implements Listener {
 
             if (dataManager.getYamlPlayerKilledByPlayer(playerUuid)) {
                 event.getPlayer().getInventory().setItem(0, bedRespawn.getItem());
-                event.getPlayer().getInventory().setItem(1, giveUp.getItem());
+                event.getPlayer().getInventory().setItem(7, removeBedSpawn.getItem());
+                event.getPlayer().getInventory().setItem(8, giveUp.getItem());
             }
 
             if (!dataManager.getYamlPlayerKilledByPlayer(playerUuid)) {
                 event.getPlayer().getInventory().setItem(0, respawnHere.getItem());
                 event.getPlayer().getInventory().setItem(1, bedRespawn.getItem());
+                event.getPlayer().getInventory().setItem(6, removeBedSpawn.getItem());
                 event.getPlayer().getInventory().setItem(7, giveUp.getItem());
                 event.getPlayer().getInventory().setItem(8, resetLocation.getItem());
             }
@@ -146,7 +149,7 @@ public class EventListener implements Listener {
             event.setRespawnLocation(location);
 
         } else {
-            if (dataManager.getYamlPlayerGaveUp(playerUuid) || dataManager.getYamlPlayerBedRespawned(playerUuid)) {
+            if (dataManager.getYamlPlayerGaveUp(playerUuid)) {
                 event.setRespawnLocation(player.getBedSpawnLocation());
             } else if (respawnedHere.containsKey(player)) {
                 event.setRespawnLocation(respawnedHere.get(player));
@@ -170,7 +173,6 @@ public class EventListener implements Listener {
                         player.sendMessage("You don't have enough bits.");
                     } else {
                         dataManager.setYamlPlayerGaveUp(playerUuid, false);
-                        dataManager.setYamlPlayerBedRespawned(playerUuid, false);
                         deathGhost.eco.withdrawPlayer(player, respawnPrice);
                         respawnedHere.put(player, player.getLocation());
                         player.setHealth(0);
@@ -183,29 +185,14 @@ public class EventListener implements Listener {
                         player.sendMessage("You don't have enough bits");
                     } else {
                         dataManager.setYamlPlayerGaveUp(playerUuid, false);
-                        dataManager.setYamlPlayerBedRespawned(playerUuid, true);
                         deathGhost.eco.withdrawPlayer(player, 1.0);
                         player.setHealth(0);
                     }
-
                 }
 
-
-                if (event.getItem().equals(randomRespawn.getItem())) {
-                    if (deathGhost.eco.getBalance(player) < 1.0) {
-                        player.sendMessage("You don't have enough bits");
-                    } else {
-                        dataManager.setYamlPlayerGaveUp(playerUuid, false);
-                        dataManager.setYamlPlayerBedRespawned(playerUuid, false);
-                        deathGhost.eco.withdrawPlayer(player, 1.0);
-                        player.setHealth(0);
-                    }
-
-                }
 
                 if (event.getItem().equals(giveUp.getItem())) {
                     dataManager.setYamlPlayerGaveUp(playerUuid, true);
-                    dataManager.setYamlPlayerBedRespawned(playerUuid, false);
                     player.setHealth(0);
 
                 }
@@ -213,6 +200,11 @@ public class EventListener implements Listener {
                 if (event.getItem().equals(resetLocation.getItem())) {
                     Location location = dataManager.getYamlPlayerDeathLocation(playerUuid);
                     player.teleport(location);
+                }
+
+                if (event.getItem().equals(removeBedSpawn.getItem())) {
+                    player.sendMessage(ChatColor.GRAY + "You have removed your bed respawn location");
+                    player.setBedSpawnLocation(null);
                 }
 
 
@@ -237,7 +229,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
 
-        Player player = (Player) event.getPlayer();
+        Player player = event.getPlayer();
         String playerUuid = player.getUniqueId().toString();
 
         if (dataManager.getYamlPlayerGhostMode(playerUuid)){
