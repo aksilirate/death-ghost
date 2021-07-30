@@ -5,10 +5,13 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
+
+import static org.bukkit.Bukkit.getServer;
 
 
 public class DeathGhost extends JavaPlugin {
@@ -22,19 +25,11 @@ public class DeathGhost extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        @SuppressWarnings("unused") BukkitTask deathDistanceUpdater = new DeathDistanceUpdater(this).runTaskTimer(this, 20, 20);
-        getServer().getPluginManager().registerEvents(new EventListener(this), this);
-
-        dataManager = new DataManager(this);
-        eventListener = new EventListener(this);
-
-
         if (!setupEconomy() ) {
             System.out.println("Disabled due to no Vault dependency found!");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-
 
         if (!getDataFolder().exists()) {
             if (getDataFolder().mkdirs()) {
@@ -42,8 +37,18 @@ public class DeathGhost extends JavaPlugin {
             }
         }
 
+        dataManager = new DataManager(this);
+        eventListener = new EventListener(this);
 
+
+        @SuppressWarnings("unused") BukkitTask deathDistanceUpdater = new DeathDistanceUpdater(this).runTaskTimer(this, 20, 20);
+        getServer().getPluginManager().registerEvents(new EventListener(this), this);
+
+
+        RegisteredServiceProvider<Economy> eco_rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        eco = eco_rsp.getProvider();
     }
+
 
     private boolean setupEconomy() {
         return getServer().getPluginManager().getPlugin( "Vault") != null;

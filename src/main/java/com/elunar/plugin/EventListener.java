@@ -136,14 +136,18 @@ public class EventListener implements Listener {
 
             if (dataManager.getYamlPlayerKilledByPlayer(playerUuid)) {
                 event.getPlayer().getInventory().setItem(0, bedRespawn.getItem());
-                event.getPlayer().getInventory().setItem(7, removeBedSpawn.getItem());
+                if(player.getBedSpawnLocation() != null){
+                    event.getPlayer().getInventory().setItem(7, removeBedSpawn.getItem());
+                }
                 event.getPlayer().getInventory().setItem(8, giveUp.getItem());
             }
 
             if (!dataManager.getYamlPlayerKilledByPlayer(playerUuid)) {
                 event.getPlayer().getInventory().setItem(0, respawnHere.getItem());
                 event.getPlayer().getInventory().setItem(1, bedRespawn.getItem());
-                event.getPlayer().getInventory().setItem(6, removeBedSpawn.getItem());
+                if(player.getBedSpawnLocation() != null){
+                    event.getPlayer().getInventory().setItem(6, removeBedSpawn.getItem());
+                }
                 event.getPlayer().getInventory().setItem(7, giveUp.getItem());
                 event.getPlayer().getInventory().setItem(8, resetLocation.getItem());
             }
@@ -194,11 +198,11 @@ public class EventListener implements Listener {
 
 
                 if (event.getItem().equals(bedRespawn.getItem())) {
-                    if (deathGhost.eco.getBalance(player) < 1.0) {
+                    if (deathGhost.eco.getBalance(player) < 3.0) {
                         player.sendMessage(ChatColor.RED + "You don't have enough bits");
                     } else {
                         dataManager.setYamlPlayerGaveUp(playerUuid, false);
-                        deathGhost.eco.withdrawPlayer(player, 1.0);
+                        deathGhost.eco.withdrawPlayer(player, 3.0);
                         player.setHealth(0);
                     }
                 }
@@ -217,6 +221,10 @@ public class EventListener implements Listener {
 
                 if (event.getItem().equals(removeBedSpawn.getItem())) {
                     player.sendMessage(ChatColor.GRAY + "You have removed your bed respawn location");
+
+                    ItemStack Air = new ItemStack(Material.AIR);
+
+                    player.getInventory().setItemInMainHand(Air);
                     player.setBedSpawnLocation(null);
                 }
 
@@ -268,6 +276,7 @@ public class EventListener implements Listener {
     @SuppressWarnings("ConstantConditions")
     @EventHandler
     public void onServiceRegister(ServiceRegisterEvent event) {
+
         RegisteredServiceProvider<Economy> eco_rsp = getServer().getServicesManager().getRegistration(Economy.class);
         deathGhost.eco = eco_rsp.getProvider();
     }

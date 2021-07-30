@@ -10,7 +10,7 @@ public class BedRespawn {
     public ItemStack getItem(){
         ItemStack itemStack = new ItemStack(Material.ENCHANTED_GOLDEN_APPLE);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.RESET + "" + ChatColor.YELLOW + "Respawn | Keep Inventory | Keep XP [1✦]");
+        itemMeta.setDisplayName(ChatColor.RESET + "" + ChatColor.YELLOW + "Respawn | Keep Inventory | Keep XP [3✦]");
         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         itemStack.setItemMeta(itemMeta);
         return itemStack;
