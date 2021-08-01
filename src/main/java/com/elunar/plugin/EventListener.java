@@ -136,7 +136,7 @@ public class EventListener implements Listener {
 
             if (dataManager.getYamlPlayerKilledByPlayer(playerUuid)) {
                 event.getPlayer().getInventory().setItem(0, bedRespawn.getItem());
-                if(player.getBedSpawnLocation() != null){
+                if (player.getBedSpawnLocation() != null) {
                     event.getPlayer().getInventory().setItem(7, removeBedSpawn.getItem());
                 }
                 event.getPlayer().getInventory().setItem(8, giveUp.getItem());
@@ -145,7 +145,7 @@ public class EventListener implements Listener {
             if (!dataManager.getYamlPlayerKilledByPlayer(playerUuid)) {
                 event.getPlayer().getInventory().setItem(0, respawnHere.getItem());
                 event.getPlayer().getInventory().setItem(1, bedRespawn.getItem());
-                if(player.getBedSpawnLocation() != null){
+                if (player.getBedSpawnLocation() != null) {
                     event.getPlayer().getInventory().setItem(6, removeBedSpawn.getItem());
                 }
                 event.getPlayer().getInventory().setItem(7, giveUp.getItem());
@@ -178,7 +178,7 @@ public class EventListener implements Listener {
             if (event.getItem() != null) {
 
 
-                if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK)){
+                if (event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
                     event.setCancelled(true);
                     return;
                 }
@@ -253,7 +253,7 @@ public class EventListener implements Listener {
         Player player = event.getPlayer();
         String playerUuid = player.getUniqueId().toString();
 
-        if (dataManager.getYamlPlayerGhostMode(playerUuid)){
+        if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
             event.setCancelled(true);
         }
 
@@ -282,18 +282,17 @@ public class EventListener implements Listener {
     }
 
 
-
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player){
+        if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             String playerUuid = player.getUniqueId().toString();
-            if (dataManager.getYamlPlayerGhostMode(playerUuid)){
-                if (event.getCause().equals(EntityDamageEvent.DamageCause.VOID)){
+            if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
+                if (event.getCause().equals(EntityDamageEvent.DamageCause.VOID)) {
                     event.setCancelled(true);
 
                     Location location = player.getLocation();
-                    location.add(0,30,0);
+                    location.add(0, 30, 0);
                     player.teleport(location);
                 }
             }
@@ -358,7 +357,18 @@ public class EventListener implements Listener {
         Player player = event.getPlayer();
         String playerUuid = player.getUniqueId().toString();
 
+
         if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
+
+            if (event.getMessage().startsWith("/discord")) {
+                return;
+            }
+
+
+            if (event.getMessage().startsWith("/lands withdraw")) {
+                return;
+            }
+
             event.setCancelled(true);
         }
     }
