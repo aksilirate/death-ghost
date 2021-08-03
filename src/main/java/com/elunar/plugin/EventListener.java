@@ -185,7 +185,7 @@ public class EventListener implements Listener {
 
 
                 if (player.getInventory().getHeldItemSlot() == 0) {
-                    int respawnPrice = deathGhost.getRespawnHerePrice(player) + 2;
+                    int respawnPrice = deathGhost.getRespawnHerePrice(player);
                     if (deathGhost.eco.getBalance(player) < respawnPrice) {
                         player.sendMessage(ChatColor.RED + "You don't have enough bits");
                     } else {
@@ -198,11 +198,11 @@ public class EventListener implements Listener {
 
 
                 if (event.getItem().equals(bedRespawn.getItem())) {
-                    if (deathGhost.eco.getBalance(player) < 3.0) {
+                    if (deathGhost.eco.getBalance(player) < 1.0) {
                         player.sendMessage(ChatColor.RED + "You don't have enough bits");
                     } else {
                         dataManager.setYamlPlayerGaveUp(playerUuid, false);
-                        deathGhost.eco.withdrawPlayer(player, 3.0);
+                        deathGhost.eco.withdrawPlayer(player, 1.0);
                         player.setHealth(0);
                     }
                 }
