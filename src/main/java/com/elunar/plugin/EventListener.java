@@ -278,7 +278,9 @@ public class EventListener implements Listener {
     public void onServiceRegister(ServiceRegisterEvent event) {
 
         RegisteredServiceProvider<Economy> eco_rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        deathGhost.eco = eco_rsp.getProvider();
+        if (eco_rsp != null) {
+            deathGhost.eco = eco_rsp.getProvider();
+        }
     }
 
 

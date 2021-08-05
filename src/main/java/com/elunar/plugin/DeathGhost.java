@@ -46,7 +46,12 @@ public class DeathGhost extends JavaPlugin {
 
 
         RegisteredServiceProvider<Economy> eco_rsp = getServer().getServicesManager().getRegistration(Economy.class);
-        eco = eco_rsp.getProvider();
+        if (eco_rsp != null){
+            eco = eco_rsp.getProvider();
+        }
+
+
+
     }
 
 
