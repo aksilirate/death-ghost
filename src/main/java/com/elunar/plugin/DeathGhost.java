@@ -66,6 +66,13 @@ public class DeathGhost extends JavaPlugin {
         return (int) originalLocation.distance(player.getLocation()) + 1;
     }
 
+
+
+    public boolean isPlayerDead(String playerUID){
+        return dataManager.getYamlPlayerGhostMode(playerUID);
+    }
+
+
     @Override
     public void onDisable() {
         // Plugin shutdown logic
