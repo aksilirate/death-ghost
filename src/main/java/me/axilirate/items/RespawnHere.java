@@ -1,4 +1,4 @@
-package com.elunar.plugin.items;
+package me.axilirate.items;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

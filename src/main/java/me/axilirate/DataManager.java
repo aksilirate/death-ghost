@@ -1,4 +1,5 @@
-package com.elunar.plugin;
+package me.axilirate;
+
 
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;

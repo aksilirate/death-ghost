@@ -1,18 +1,25 @@
-package com.elunar.plugin.items;
+package me.axilirate.items;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class BedRespawn {
+public class RemoveBedSpawn {
+
+
     public ItemStack getItem(){
-        ItemStack itemStack = new ItemStack(Material.ENCHANTED_GOLDEN_APPLE);
+        ItemStack itemStack = new ItemStack(Material.BARRIER);
         ItemMeta itemMeta = itemStack.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.RESET + "" + ChatColor.YELLOW + "Respawn | Keep Inventory | Keep XP [1✦]");
+        itemMeta.setDisplayName("Remove Your Bed Spawn Point");
+        itemMeta.addEnchant(Enchantment.LUCK, 1, false);
         itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
+
+
+
+
 }

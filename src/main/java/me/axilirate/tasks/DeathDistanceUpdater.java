@@ -1,8 +1,8 @@
-package com.elunar.plugin.tasks;
+package me.axilirate.tasks;
 
 
-import com.elunar.plugin.DataManager;
-import com.elunar.plugin.DeathGhost;
+import me.axilirate.DataManager;
+import me.axilirate.DeathGhost;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

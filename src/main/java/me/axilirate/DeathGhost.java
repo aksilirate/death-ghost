@@ -1,6 +1,6 @@
-package com.elunar.plugin;
+package me.axilirate;
 
-import com.elunar.plugin.tasks.DeathDistanceUpdater;
+import me.axilirate.tasks.DeathDistanceUpdater;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,7 +11,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 
-import static org.bukkit.Bukkit.getServer;
 
 
 public class DeathGhost extends JavaPlugin {
@@ -20,7 +19,9 @@ public class DeathGhost extends JavaPlugin {
     public EventListener eventListener;
     public DataManager dataManager;
 
+
     public ArrayList<Player> deadPlayers = new ArrayList<>();
+    public ArrayList<Player> unsafeDeath = new ArrayList<>();
 
 
     @Override
@@ -37,8 +38,10 @@ public class DeathGhost extends JavaPlugin {
             }
         }
 
+
         dataManager = new DataManager(this);
         eventListener = new EventListener(this);
+
 
 
         @SuppressWarnings("unused") BukkitTask deathDistanceUpdater = new DeathDistanceUpdater(this).runTaskTimer(this, 20, 20);
@@ -72,6 +75,20 @@ public class DeathGhost extends JavaPlugin {
         return dataManager.getYamlPlayerGhostMode(playerUID);
     }
 
+    public void addPlayerToUnsafeDeath(Player player){
+        if (unsafeDeath.contains(player)){
+            return;
+        }
+        unsafeDeath.add(player);
+
+    }
+
+    public void removePlayerFromUnsafeDeath(Player player){
+        if (!unsafeDeath.contains(player)){
+            return;
+        }
+        unsafeDeath.remove(player);
+    }
 
     @Override
     public void onDisable() {

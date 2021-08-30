@@ -1,6 +1,6 @@
-package com.elunar.plugin;
+package me.axilirate;
 
-import com.elunar.plugin.items.*;
+import me.axilirate.items.*;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -48,6 +48,8 @@ public class EventListener implements Listener {
         Player player = event.getEntity();
         String playerUuid = player.getUniqueId().toString();
 
+
+
         if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
 
             List<ItemStack> savedItems = dataManager.getYamlPlayerInventory(playerUuid);
@@ -93,6 +95,11 @@ public class EventListener implements Listener {
 
 
         } else {
+
+
+            if (deathGhost.unsafeDeath.contains(player)){
+                return;
+            }
 
             //noinspection ConstantConditionsrespawnHere
             dataManager.setYamlPlayerKilledByPlayer(playerUuid, player.getKiller() != null);
