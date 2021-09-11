@@ -25,35 +25,33 @@ public class DataManager {
         File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
-        for (int i = 0; i < inventory.length; i++){
+        for (int i = 0; i < inventory.length; i++) {
             ItemStack item = inventory[i];
-            if (item == null){
+            if (item == null) {
                 yaml_file.set("inventory." + i, "empty");
-            }else{
+            } else {
                 yaml_file.set("inventory." + i, item);
             }
 
         }
 
 
-
-
         saveYamlFile(file, yaml_file);
     }
 
     @SuppressWarnings({"unused", "rawtypes"})
-    public List<ItemStack> getYamlPlayerInventory(String playerUuid){
+    public List<ItemStack> getYamlPlayerInventory(String playerUuid) {
         File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
         ConfigurationSection inventory = yaml_file.getConfigurationSection("inventory");
 
-        if (inventory == null){
+        if (inventory == null) {
             return new ArrayList();
-        }else{
+        } else {
             List<ItemStack> items = new ArrayList<>();
-            for (String index: inventory.getKeys(false)){
+            for (String index : inventory.getKeys(false)) {
                 Object item = inventory.get(index);
-                if(item instanceof ItemStack) items.add((ItemStack)item);
+                if (item instanceof ItemStack) items.add((ItemStack) item);
                 else items.add(null);
             }
             return items;
@@ -88,7 +86,7 @@ public class DataManager {
     }
 
 
-    public void setYamlPlayerDeathLocation(String playerUuid, Location location){
+    public void setYamlPlayerDeathLocation(String playerUuid, Location location) {
         File file = new File(deathGhost.getDataFolder(), playerUuid + ".yml");
         YamlConfiguration yaml_file = YamlConfiguration.loadConfiguration(file);
 
@@ -113,8 +111,6 @@ public class DataManager {
         }
 
     }
-
-
 
 
     public void setYamlPlayerKilledByPlayer(String playerUuid, boolean mode) {
@@ -166,9 +162,6 @@ public class DataManager {
         }
 
     }
-
-
-
 
 
     public void saveYamlFile(File file, YamlConfiguration yaml_file) {
