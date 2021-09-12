@@ -46,15 +46,19 @@ public class DeathGhost extends JavaPlugin {
 
     public String broadcastChannelID;
 
+    public boolean revealDeathCoords;
+
     @Override
     public void onEnable() {
 
 
         config.addDefault("broadcast-channel-id", "0");
+        config.addDefault("reveal-death-coords", true);
         config.options().copyDefaults(true);
         saveConfig();
-        
+
         broadcastChannelID = config.getString("broadcast-channel-id");
+        revealDeathCoords = config.getBoolean("reveal-death-coords");
 
         if (!setupEconomy()) {
             System.out.println("Disabled due to no Vault dependency found!");
@@ -131,18 +135,26 @@ public class DeathGhost extends JavaPlugin {
         String playerUuid = player.getUniqueId().toString();
 
         String locationString = player.getLocation().getWorld().getName() + " x:" + player.getLocation().getBlockX() + " y:" + player.getLocation().getBlockY() + " z:" + player.getLocation().getBlockZ();
-        String message = player.getName() + " has died at " + locationString;
+
+        String message = player.getName() + " has died";
+
+        if (revealDeathCoords) {
+            message += " at " + locationString;
+        }
 
         getServer().broadcastMessage(message);
 
         if (getServer().getPluginManager().getPlugin("DiscordSRV") != null) {
             TextChannel textChannel = DiscordUtil.getJda().getTextChannelById(broadcastChannelID);
-            EmbedBuilder embedBuilder = new EmbedBuilder();
 
+            if (textChannel != null) {
+                EmbedBuilder embedBuilder = new EmbedBuilder();
 
-            embedBuilder.setColor(Color.BLACK);
-            embedBuilder.setAuthor(message, null, "https://cravatar.eu/helmavatar/" + player.getName() + "/64.png");
-            textChannel.sendMessage(embedBuilder.build()).queue();
+                embedBuilder.setColor(Color.BLACK);
+                embedBuilder.setAuthor(message, null, "https://cravatar.eu/helmavatar/" + player.getName() + "/64.png");
+                textChannel.sendMessage(embedBuilder.build()).queue();
+            }
+
         }
 
 
@@ -212,14 +224,17 @@ public class DeathGhost extends JavaPlugin {
 
         if (getServer().getPluginManager().getPlugin("DiscordSRV") != null) {
             TextChannel textChannel = DiscordUtil.getJda().getTextChannelById(broadcastChannelID);
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+            if (textChannel != null) {
+                EmbedBuilder embedBuilder = new EmbedBuilder();
 
 
-            embedBuilder.setColor(Color.WHITE);
-            embedBuilder.setAuthor(message, null, "https://cravatar.eu/helmavatar/" + player.getName() + "/64.png");
-            textChannel.sendMessage(embedBuilder.build()).queue();
+                embedBuilder.setColor(Color.WHITE);
+                embedBuilder.setAuthor(message, null, "https://cravatar.eu/helmavatar/" + player.getName() + "/64.png");
+                textChannel.sendMessage(embedBuilder.build()).queue();
+            }
+
         }
-        
+
         dataManager.setYamlPlayerGhostMode(playerUuid, false);
 
         player.setInvulnerable(false);

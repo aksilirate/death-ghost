@@ -183,6 +183,16 @@ public class EventListener implements Listener {
                 }
             }
 
+            if (player.getInventory().getItemInOffHand().getType().equals(Material.TOTEM_OF_UNDYING)){
+                return;
+            }
+
+
+            if (player.getInventory().getItemInMainHand().getType().equals(Material.TOTEM_OF_UNDYING)){
+                return;
+            }
+
+
             if ((player.getHealth() - event.getFinalDamage()) <= 0) {
                 player.setHealth(20);
                 deathGhost.playerToGhostMode(player);
