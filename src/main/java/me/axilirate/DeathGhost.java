@@ -11,6 +11,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 
@@ -41,9 +42,20 @@ public class DeathGhost extends JavaPlugin {
     public ArrayList<Player> deadPlayers = new ArrayList<>();
     public ArrayList<Player> unsafeDeath = new ArrayList<>();
 
+    public FileConfiguration config = this.getConfig();
+
+    public String broadcastChannelID;
 
     @Override
     public void onEnable() {
+
+
+        config.addDefault("broadcast-channel-id", "0");
+        config.options().copyDefaults(true);
+        saveConfig();
+        
+        broadcastChannelID = config.getString("broadcast-channel-id");
+
         if (!setupEconomy()) {
             System.out.println("Disabled due to no Vault dependency found!");
             getServer().getPluginManager().disablePlugin(this);
@@ -123,13 +135,15 @@ public class DeathGhost extends JavaPlugin {
 
         getServer().broadcastMessage(message);
 
-        TextChannel textChannel = DiscordUtil.getJda().getTextChannelById("852430564686168104");
-        EmbedBuilder embedBuilder = new EmbedBuilder();
+        if (getServer().getPluginManager().getPlugin("DiscordSRV") != null) {
+            TextChannel textChannel = DiscordUtil.getJda().getTextChannelById(broadcastChannelID);
+            EmbedBuilder embedBuilder = new EmbedBuilder();
 
 
-        embedBuilder.setColor(Color.BLACK);
-        embedBuilder.setAuthor(message, null, "https://cravatar.eu/helmavatar/" + player.getName() + "/64.png");
-        textChannel.sendMessage(embedBuilder.build()).queue();
+            embedBuilder.setColor(Color.BLACK);
+            embedBuilder.setAuthor(message, null, "https://cravatar.eu/helmavatar/" + player.getName() + "/64.png");
+            textChannel.sendMessage(embedBuilder.build()).queue();
+        }
 
 
         if (unsafeDeath.contains(player)) {
@@ -196,14 +210,16 @@ public class DeathGhost extends JavaPlugin {
 
         getServer().broadcastMessage(message);
 
-        TextChannel textChannel = DiscordUtil.getJda().getTextChannelById("852430564686168104");
-        EmbedBuilder embedBuilder = new EmbedBuilder();
+        if (getServer().getPluginManager().getPlugin("DiscordSRV") != null) {
+            TextChannel textChannel = DiscordUtil.getJda().getTextChannelById(broadcastChannelID);
+            EmbedBuilder embedBuilder = new EmbedBuilder();
 
 
-        embedBuilder.setColor(Color.WHITE);
-        embedBuilder.setAuthor(message, null, "https://cravatar.eu/helmavatar/" + player.getName() + "/64.png");
-        textChannel.sendMessage(embedBuilder.build()).queue();
-
+            embedBuilder.setColor(Color.WHITE);
+            embedBuilder.setAuthor(message, null, "https://cravatar.eu/helmavatar/" + player.getName() + "/64.png");
+            textChannel.sendMessage(embedBuilder.build()).queue();
+        }
+        
         dataManager.setYamlPlayerGhostMode(playerUuid, false);
 
         player.setInvulnerable(false);
