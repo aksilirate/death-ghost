@@ -262,6 +262,10 @@ public class EventListener implements Listener {
         String playerUuid = player.getUniqueId().toString();
 
 
+        if(deathGhost.enableCommandsWhenGhost){
+            return;
+        }
+
         if (dataManager.getYamlPlayerGhostMode(playerUuid)) {
 
             if (event.getMessage().startsWith("/discord")) {
@@ -275,6 +279,9 @@ public class EventListener implements Listener {
 
             event.setCancelled(true);
         }
+
+
+
     }
 
 

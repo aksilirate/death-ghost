@@ -6,7 +6,6 @@ import github.scarsz.discordsrv.util.DiscordUtil;
 import me.axilirate.items.*;
 import me.axilirate.tasks.DeathDistanceUpdater;
 import net.milkbowl.vault.economy.Economy;
-import org.apache.commons.lang.math.RandomUtils;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,17 +47,21 @@ public class DeathGhost extends JavaPlugin {
 
     public boolean revealDeathCoords;
 
+    public boolean enableCommandsWhenGhost;
+
     @Override
     public void onEnable() {
 
 
         config.addDefault("broadcast-channel-id", "0");
         config.addDefault("reveal-death-coords", true);
+        config.addDefault("enable-commands-when-ghost", false);
         config.options().copyDefaults(true);
         saveConfig();
 
         broadcastChannelID = config.getString("broadcast-channel-id");
         revealDeathCoords = config.getBoolean("reveal-death-coords");
+        enableCommandsWhenGhost = config.getBoolean("enable-commands-when-ghost");
 
         if (!setupEconomy()) {
             System.out.println("Disabled due to no Vault dependency found!");
