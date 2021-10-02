@@ -1,5 +1,6 @@
 package me.axilirate;
 
+import me.axilirate.events.PlayerGhostEvent;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -194,9 +195,17 @@ public class EventListener implements Listener {
 
 
             if ((player.getHealth() - event.getFinalDamage()) <= 0) {
-                player.setHealth(20);
-                deathGhost.playerToGhostMode(player);
-                event.setCancelled(true);
+
+                PlayerGhostEvent playerGhostEvent = new PlayerGhostEvent(player);
+
+                deathGhost.getServer().getPluginManager().callEvent(playerGhostEvent);
+
+                if (!playerGhostEvent.isCancelled()) {
+                    player.setHealth(20);
+                    deathGhost.playerToGhostMode(player);
+                    event.setCancelled(true);
+                }
+
             }
 
 
